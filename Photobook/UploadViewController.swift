@@ -72,24 +72,24 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         let imageFile = imageView.image?.jpegData(compressionQuality: 1)
         if imageFile == nil { return }
 
-//        PictureController.shared.addPicture(forPicture: imageFile!) {_ in
-//            print(self.picture)
-//        }
-        
-        let imageString = UploadViewController.convertImageToBase64(image: imageView.image!)
-        
-        let newPicture: [String: Any] = ["title": titleTextField.text!, "description": descriptionTextField.text!, "imageString": imageString]
-        
-        PictureController.shared.addPicture(forPicture: newPicture, forUser: currentUser)
-        { (picture) in
-            DispatchQueue.main.async {
-                print("dispatch queue")
-                if let picture = picture {
-                    print("picture=picture")
-                    self.picture = picture
-                }
-            }
+        PictureController.shared.addPicture(forPicture: imageFile!) {_ in
+            print(self.picture)
         }
+        
+//        let imageString = UploadViewController.convertImageToBase64(image: imageView.image!)
+//
+//        let newPicture: [String: Any] = ["title": titleTextField.text!, "description": descriptionTextField.text!, "imageString": imageString]
+//
+//        PictureController.shared.addPicture(forPicture: newPicture, forUser: currentUser)
+//        { (picture) in
+//            DispatchQueue.main.async {
+//                print("dispatch queue")
+//                if let picture = picture {
+//                    print("picture=picture")
+//                    self.picture = picture
+//                }
+//            }
+//        }
     }
     
     // Convert UIImage to String
