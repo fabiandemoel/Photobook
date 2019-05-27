@@ -31,43 +31,6 @@ class UserController {
     
     /////////////////////// Get Functions //////////////////////////////
     
-    // Get Users Friends
-    
-    // In order to use this, the server needs to accept multiple users at once. At this moment it only returns the first user bound to the name parameter
-    
-//    func fetchFriends(forFriends friends: String, completion: @escaping ([User]?) -> Void) {
-//
-//        var query: [String] = []
-//
-//        let friendList = friends.split(separator: ",")
-//        for friend in friendList {
-//            query.append(String(friend))
-//        }
-//
-//        guard let url = baseUrl.withQueries(query) else {
-//            completion(nil)
-//            print("Unable to build URL with supplied queries.")
-//            return
-//        }
-//
-//
-//        // Decoding data
-//        let task = URLSession.shared.dataTask(with: url)
-//        { (data, response, error) in
-//            let jsonDecoder = JSONDecoder()
-//            if let data = data,
-//                let users = try? jsonDecoder.decode([User].self, from: data) {
-//                completion(users)
-//            } else {
-//                completion(nil)
-//            }
-//        }
-//        task.resume()
-//    }
-    
-
-    
-
     // Get One User
     func fetchUser(forUser userName: String, completion: @escaping (User?) -> Void) {
         
@@ -91,21 +54,6 @@ class UserController {
             }
         }
         task.resume()
-        
-//        // Decoding data
-//        let task = URLSession.shared.dataTask(with: url)
-//        { (data, response, error) in
-//            let jsonDecoder = JSONDecoder()
-//            if let data = data,
-//                let user = try? jsonDecoder.decode(User.self, from: data) {
-//                print("success")
-//                completion(user)
-//            } else {
-//                print("fail")
-//                completion(nil)
-//            }
-//        }
-//        task.resume()
     }
     
     /////////////////////// Post Function //////////////////////////////
@@ -163,3 +111,39 @@ class UserController {
         task.resume()
     }
 }
+
+
+
+// Get Users Friends
+
+// In order to use this, the server needs to accept multiple users at once. At this moment it only returns the first user bound to the name parameter
+//
+//    func fetchFriends(forFriends friends: String, completion: @escaping ([User]?) -> Void) {
+//
+//        var query: [String] = []
+//
+//        let friendList = friends.split(separator: ",")
+//        for friend in friendList {
+//            query.append(String(friend))
+//        }
+//
+//        guard let url = baseUrl.withQueries(query) else {
+//            completion(nil)
+//            print("Unable to build URL with supplied queries.")
+//            return
+//        }
+//
+//
+//        // Decoding data
+//        let task = URLSession.shared.dataTask(with: url)
+//        { (data, response, error) in
+//            let jsonDecoder = JSONDecoder()
+//            if let data = data,
+//                let users = try? jsonDecoder.decode([User].self, from: data) {
+//                completion(users)
+//            } else {
+//                completion(nil)
+//            }
+//        }
+//        task.resume()
+//    }
