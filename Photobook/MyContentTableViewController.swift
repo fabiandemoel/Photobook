@@ -6,46 +6,97 @@
 //  Copyright © 2019 Fabian de Moel. All rights reserved.
 //
 
+import Foundation
 import UIKit
 
 class MyContentTableViewController: UITableViewController, UITabBarControllerDelegate {
     
-    // Variables
-    var user: User!
-    var content: [Picture]!
+    ////////////////////// View Preperation /////////////////////
     
+    // Variables
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var user: User!
+    var content = [Picture]()
+    
+    
+    // View Did Load
     override func viewDidLoad() {
         super.viewDidLoad()
         self.tabBarController?.delegate = self
         
-        user = User.loadSampleUser()
-//        checkType()
+        user = appDelegate.globalUser
+        checkType()
         
         // Load Pictures
-        if let pictures = Picture.loadPictures() {
-            content = pictures
-        } else {
-//            content = Picture.loadSamplePictures()
+        PictureController.shared.fetchPictures(forUser: user!.name) { (pictures) in
+            guard let pictures = pictures else { return }
+            self.updateUI(with: pictures)
         }
+        
+        // Load Images
+        
         navigationItem.leftBarButtonItem = editButtonItem
     }
     
-    
-    // Switch tab bar for simple accounts
-    // Source: https://stackoverflow.com/questions/33837475/detect-when-a-tab-bar-item-is-pressed
-    // Source: https://stackoverflow.com/questions/28099148/switch-tab-bar-programmatically-in-swift
-    func tabBarController(_ tabBarController: UITabBarController,
-                          didSelect viewController: UIViewController) {
-        let tabBarIndex = tabBarController.selectedIndex
-        if tabBarIndex == 1 {
-            checkType()
+    func updateUI(with content: [Picture]) {
+        
+        DispatchQueue.main.async {
+            self.content = content
+            self.tableView.reloadData()
         }
     }
+
+    
+    /////////////////// Table view data source //////////////////////
+    
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            // Send delete request to server
+            let picture = content[indexPath.row]
+            PictureController.shared.deletePictureData(forPicture: picture.id, forUser: user.name) {_ in
+            }
+            self.content.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+        }
+    }
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return content.count
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "PostCellIdentifier", for: indexPath)
+        configure(cell, forItemAt: indexPath)
+        return cell
+    }
+    
+    func configure(_ cell: UITableViewCell, forItemAt indexPath: IndexPath) {
+        let picture = content[indexPath.row]
+        cell.textLabel?.text = picture.title
+        PictureController.shared.fetchPicture(url: picture.url) { (image) in
+            guard let image = image else { return }
+            DispatchQueue.main.async {
+                if let currentIndexPath = self.tableView.indexPath(for: cell), currentIndexPath != indexPath {return}
+                cell.imageView?.image = image
+                cell.setNeedsLayout()
+            }
+        }
+    }
+    
+    
+    ///////////////////// Switch tab bar for simple accounts ///////////////////////
+    
+    // Source: https://stackoverflow.com/questions/33837475/detect-when-a-tab-bar-item-is-pressed
+    // Source: https://stackoverflow.com/questions/28099148/switch-tab-bar-programmatically-in-swift
     
     // Check Account Type
     func checkType() {
         if user.type == "simple" {
-            let alert = UIAlertController(title: "Simple Mode", message: "This section is a little bit more challenging, you can enable it in the settings screen by switching simple mode off", preferredStyle: .alert)
+            let alert = UIAlertController(title: "Simple Mode", message: "This section is a little bit more challenging, so it's disabled in simple mode. You can enable it in the settings screen by switching simple mode off and saving your settings.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Contacts", style: .default) { action in
                 self.switchToContactTab()
             })
@@ -56,7 +107,7 @@ class MyContentTableViewController: UITableViewController, UITabBarControllerDel
         }
     }
     
-    // Tab Switch
+    // Tab Switches
     func switchToContactTab() {
         Timer.scheduledTimer(timeInterval: 0.2, target: self, selector: #selector(switchToContactTabCont), userInfo: nil, repeats: false)
     }
@@ -73,52 +124,24 @@ class MyContentTableViewController: UITableViewController, UITabBarControllerDel
         tabBarController!.selectedIndex = 2
     }
     
-    // MARK: - Table view data source
-
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 1
-    }
-    
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Send delete request to server
-            content.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        }
-    }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let userContent = content{
-            return userContent.count
-        } else {
-            return 0
+    // Recheck user data when switched to Tab bar
+    func tabBarController(_ tabBarController: UITabBarController,
+                          didSelect viewController: UIViewController) {
+        let tabBarIndex = tabBarController.selectedIndex
+        if tabBarIndex == 1 {
+            if user.name != appDelegate.globalUser.name {
+                viewDidLoad()
+            } else {
+                user = appDelegate.globalUser
+                checkType()
+            }
         }
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "PostCellIdentifier", for: indexPath)
-        configure(cell, forItemAt: indexPath)
-        return cell
-    }
     
-    func configure(_ cell: UITableViewCell, forItemAt indexPath: IndexPath) {
-        let picture = content[indexPath.row]
-        cell.textLabel?.text = picture.title
-//        PictureController.shared.fetchImage(url: picture.imageURL) { (image) in
-//            guard let image = image else { return }
-//            DispatchQueue.main.async {
-//                if let currentIndexPath = self.tableView.indexPath(for: cell), currentIndexPath != indexPath {return}
-//                cell.imageView?.image = image
-//                cell.setNeedsLayout()
-//            }
-//        }
-    }
+    /////////////////////// Functions //////////////////////////////
     
+    // Segue Function
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetails" {
             let uploadViewController = segue.destination as! UploadViewController
@@ -128,21 +151,20 @@ class MyContentTableViewController: UITableViewController, UITabBarControllerDel
             uploadViewController.image = tableView.cellForRow(at: indexPath)?.imageView!.image
         }
         if segue.identifier == "ContactsSegue" {
-            let contactsTableViewController = segue.destination as! ContactsTableViewController
+            _ = segue.destination as! ContactsTableViewController
         }
         if segue.identifier == "SettingsSegue" {
-            let settingTableViewController = segue.destination as! SettingsTableViewController
+            _ = segue.destination as! SettingsTableViewController
         }
     }
-    
     
     // Dismiss current view
     @IBAction func unwindToMyContent(segue: UIStoryboardSegue) {
         guard segue.identifier == "saveUnwind" else { return }
-        let sourceViewController = segue.source as! UploadViewController
         
+        let sourceViewController = segue.source as! UploadViewController
         if let picture = sourceViewController.picture {
-            
+    
             // Check if a cell was edited or needs to be added
             if let selectedIndexPath = tableView.indexPathForSelectedRow {
                 content[selectedIndexPath.row] = picture

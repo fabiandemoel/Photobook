@@ -9,33 +9,40 @@
 import UIKit
 
 class UserContentTableViewController: UITableViewController {
+    
+    ////////////////////// View Preperation /////////////////////
+    
+    // Variables
     var user: User!
     var content = [Picture]()
+    var images = [UIImage]()
     
-    // Functions
+    // View Did Load
     override func viewDidLoad() {
         super.viewDidLoad()
-        // fetch pictureInfo
         
-//        if let content = user.content {
-//            self.updateUI(with: content)
-//        }
+        title = user.name
+        
+        // Fetch pictureInfo
+        PictureController.shared.fetchPictures(forUser: user.name) { (pictures) in
+            guard let pictures = pictures else { return }
+            self.updateUI(with: pictures)
+        }
     }
     
+    
     func updateUI(with content: [Picture]) {
+        
         DispatchQueue.main.async {
             self.content = content
             self.tableView.reloadData()
-            
-            // set picture and description, most recent first
         }
     }
 
-    // MARK: - Table view data source
+    
+    
+    /////////////////// Table view data source //////////////////////
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return 0
-    }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return content.count
@@ -50,21 +57,27 @@ class UserContentTableViewController: UITableViewController {
     func configure(_ cell: UITableViewCell, forItemAt indexPath: IndexPath) {
         let picture = content[indexPath.row]
         cell.textLabel?.text = picture.title
-//        PictureController.shared.fetchImage(url: picture.imageURL) { (image) in
-//            guard let image = image else { return }
-//            DispatchQueue.main.async {
-//                if let currentIndexPath = self.tableView.indexPath(for: cell), currentIndexPath != indexPath {return}
-//                cell.imageView?.image = image
-//                cell.setNeedsLayout()
-//            }
-//        }
+        PictureController.shared.fetchPicture(url: picture.url) { (image) in
+            guard let image = image else { return }
+            DispatchQueue.main.async {
+                if let currentIndexPath = self.tableView.indexPath(for: cell), currentIndexPath != indexPath {return}
+                cell.imageView?.image = image
+                self.images.append(image)
+                cell.setNeedsLayout()
+            }
+        }
     }
     
+    
+    /////////////////////// Functions //////////////////////////////
+    
+    // Segue prep
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ViewPostSegue" {
             let postViewController = segue.destination as! PostViewController
             let index = tableView.indexPathForSelectedRow!.row
             postViewController.picture = content[index]
+            postViewController.image = images[index]
         }
     }
 }

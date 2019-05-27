@@ -10,16 +10,22 @@ import UIKit
 
 class UploadViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
+    
+    ////////////////////// View Preperation /////////////////////
+    // Variables
     var currentUser: User!
     var picture: Picture!
     var image: UIImage!
     let imagePicker = UIImagePickerController()
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
+    // Outlets and Actions
     @IBOutlet var saveButton: UIBarButtonItem!
     @IBOutlet var titleTextField: UITextField!
     @IBOutlet var descriptionTextField: UITextView!
     @IBOutlet var submitPostButton: UIButton!
     @IBOutlet var imageView: UIImageView!
+    @IBOutlet var ChoosePictureButton: UIButton!
     @IBAction func textEditingChanged(_ sender: Any) {
         updateSaveButtonState()
     }
@@ -27,11 +33,11 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         titleTextField.resignFirstResponder()
     }
     
-
+    // View did load
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        currentUser = User.loadSampleUser()
+        currentUser = appDelegate.globalUser
         
         if let post = picture {
             loadPost(with: post)
@@ -40,82 +46,82 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         imagePicker.delegate = self
     }
     
+    /////////////////////// Functions //////////////////////////////
+    
     // Load Picture
     func loadPost(with picture: Picture) {
+        
+        // Set Text Fields
+        title = picture.title
         titleTextField.text = picture.title
         descriptionTextField.text = picture.description
-        imageView.image = UploadViewController.convertBase64ToImage(imageString: picture.imageString)
+        ChoosePictureButton.isEnabled = false
+        ChoosePictureButton.tintColor = .white
+        
+        // Set Image
+        let pictureController = PictureController.shared
+        pictureController.fetchPicture(url: picture.url) { (image) in
+            guard let image = image else { return }
+            self.image = image
+        }
+        self.imageView.image = self.image
     }
     
+    // Update Save Button
     func updateSaveButtonState() {
         let text = titleTextField.text ?? ""
         saveButton.isEnabled = !text.isEmpty
     }
     
+    // Choose Image from library
     @IBAction func loadImageButtonTapped(_ sender: Any) {
         imagePicker.allowsEditing = false
         imagePicker.sourceType = .photoLibrary
-        
         present(imagePicker, animated: true, completion: nil)
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let pickedImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
             imageView.contentMode = .scaleAspectFit
+            self.image = pickedImage
             imageView.image = pickedImage
         }
         dismiss(animated: true, completion: nil)
-        
     }
 
     func uploadImage() {
-        let imageFile = imageView.image?.jpegData(compressionQuality: 1)
-        if imageFile == nil { return }
-
-        PictureController.shared.addPicture(forPicture: imageFile!) {_ in
-            print(self.picture)
-        }
+        let imageFile = self.image.jpegData(compressionQuality: 1)
         
-//        let imageString = UploadViewController.convertImageToBase64(image: imageView.image!)
-//
-//        let newPicture: [String: Any] = ["title": titleTextField.text!, "description": descriptionTextField.text!, "imageString": imageString]
-//
-//        PictureController.shared.addPicture(forPicture: newPicture, forUser: currentUser)
-//        { (picture) in
-//            DispatchQueue.main.async {
-//                print("dispatch queue")
-//                if let picture = picture {
-//                    print("picture=picture")
-//                    self.picture = picture
-//                }
-//            }
-//        }
-    }
-    
-    // Convert UIImage to String
-    // Source: https://stackoverflow.com/questions/11251340/convert-between-uiimage-and-base64-string
-    class func convertImageToBase64(image: UIImage) -> String {
-        let imageData = image.pngData()!
-        return imageData.base64EncodedString(options: Data.Base64EncodingOptions.lineLength64Characters)
-    }
-    
-    class func convertBase64ToImage(imageString: String) -> UIImage {
-        let imageData = Data(base64Encoded: imageString, options: Data.Base64DecodingOptions.ignoreUnknownCharacters)!
-        return UIImage(data: imageData)!
+        if imageFile == nil { return }
+        PictureController.shared.uploadImage(forPicture: imageFile!) {_ in
+            print("image: \(imageFile!)")
+        }
+        if let title = titleTextField.text {
+            if let description = descriptionTextField.text {
+                let url = "https://ide50-a10778403.legacy.cs50.io:8080/uploads/\(title).jpg"
+                let picture: [String: String] = ["title": title, "description": description, "url": url]
+                PictureController.shared.addPictureData(forUser: currentUser.name, forPicture: picture) {_ in}
+            }
+        }
     }
     
     
+    // Unwind function
     @IBAction func unwindToMyContent(segue: UIStoryboardSegue) {
         
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         super.prepare(for: segue, sender: sender)
-        
         guard segue.identifier == "saveUnwind" else { return }
-        
-        uploadImage()
-        
+        picture.title = titleTextField.text!
+        picture.description = descriptionTextField.text
+        if let post = picture {
+            // edit post with Put message
+            PictureController.shared.editPictureData(forValues: ["title": post.title, "description": post.description], forPicture: post.id, forUser: currentUser!.name) {_ in}
+        } else {
+            uploadImage()
+        }
     }
     
 }
