@@ -53,9 +53,6 @@ class PictureController {
     /////////////////////// Post Functions //////////////////////////////
     // Add new Picture
     
-    // Add PictureUrl to picture that is made
-    // curl http://ide50-a10778403.legacy.cs50.io:8080/highscores -d "name=score.userName&score=score.score" -X POST
-    
     func uploadImage(forPicture picture: Data, completion: @escaping (Picture?) -> Void) {
         
         // Header

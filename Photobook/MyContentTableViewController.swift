@@ -175,6 +175,5 @@ class MyContentTableViewController: UITableViewController, UITabBarControllerDel
                 tableView.insertRows(at: [newIndexPath], with: .automatic)
             }
         }
-//        ToDo.saveToDos(todos)
     }
 }

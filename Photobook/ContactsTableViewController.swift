@@ -52,15 +52,6 @@ class ContactsTableViewController: UITableViewController {
                 }
             }
         }
-        
-        // Not in use, look in UserController for reason
-//        UserController.shared.fetchFriends(forFriends: currentUser.friendsFamily) { (friends) in
-//            if let friends = friends {
-//                self.updateUI(with: friends)
-//            }
-//        }
-        
-        
     }
     
     func updateUI() {
@@ -257,3 +248,13 @@ class ContactsTableViewController: UITableViewController {
         
     }
 }
+
+
+
+
+// Not in use, look in UserController for reason
+//        UserController.shared.fetchFriends(forFriends: currentUser.friendsFamily) { (friends) in
+//            if let friends = friends {
+//                self.updateUI(with: friends)
+//            }
+//        }
