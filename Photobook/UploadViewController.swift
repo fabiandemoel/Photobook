@@ -16,7 +16,6 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     var currentUser: User!
     var picture: Picture!
     var image: UIImage!
-    var lastChosen = ""
     let imagePicker = UIImagePickerController()
     let pictureController = PictureController.shared
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -25,10 +24,8 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     @IBOutlet var saveButton: UIBarButtonItem!
     @IBOutlet var titleTextField: UITextField!
     @IBOutlet var descriptionTextField: UITextView!
-    @IBOutlet var submitPostButton: UIButton!
     @IBOutlet var imageView: UIImageView!
     @IBOutlet var ChoosePictureButton: UIButton!
-    @IBOutlet var URLTextField: UITextField!
     @IBAction func textEditingChanged(_ sender: Any) {
         updateSaveButtonState()
     }
@@ -83,14 +80,11 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if URLTextField.text!.isEmpty {
-            if let pickedImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-                imageView.contentMode = .scaleAspectFit
-                self.image = pickedImage
-                imageView.image = pickedImage
-                lastChosen = "imagePicker"
-            }
-            dismiss(animated: true, completion: nil)
+        if let pickedImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+            imageView.contentMode = .scaleAspectFit
+            self.image = pickedImage
+            imageView.image = pickedImage
+        dismiss(animated: true, completion: nil)
         }
     }
 
@@ -109,28 +103,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             }
         }
     }
-    
-    // Use image url
-    @IBAction func fetchImageButtonPressed(_ sender: Any) {
-        if let url = URL(string: URLTextField.text!) {
-            pictureController.fetchPicture(url: url) {(image) in
-                self.image = image
-                self.lastChosen = "URL"
-            }}
-        self.imageView.image = self.image
-    }
-    
-    func uploadImageWithURL() {
-        if let title = titleTextField.text {
-            if let description = descriptionTextField.text {
-                let url = URLTextField.text!
-                let picture: [String: String] = ["title": title, "description": description, "url": url]
-                pictureController.addPictureData(forUser: currentUser.name, forPicture: picture) {_ in}
-            }
-        }
-    }
-    
-    
+
     // Unwind function
     @IBAction func unwindToMyContent(segue: UIStoryboardSegue) {
         
@@ -145,12 +118,51 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
             // edit post with Put message
             pictureController.editPictureData(forValues: ["title": post.title, "description": post.description], forPicture: post.id, forUser: currentUser!.name) {_ in}
         } else {
-            if lastChosen == "imagePicker" {
-                uploadImage()
-            } else if lastChosen == "URL" {
-                uploadImageWithURL()
-            }
+            uploadImage()
         }
     }
-    
 }
+
+
+//              Code for adding URL input functionality
+//
+//    var lastChosen = ""
+//    @IBOutlet var URLTextField: UITextField!
+//
+//    // Use image url
+//    @IBAction func fetchImageButtonPressed(_ sender: Any) {
+//        if let url = URL(string: URLTextField.text!) {
+//            pictureController.fetchPicture(url: url) {(image) in
+//                self.image = image
+//                self.lastChosen = "URL"
+//            }}
+//        self.imageView.image = self.image
+//    }
+//
+//    func uploadImageWithURL() {
+//        if let title = titleTextField.text {
+//            if let description = descriptionTextField.text {
+//                let url = URLTextField.text!
+//                let picture: [String: String] = ["title": title, "description": description, "url": url]
+//                pictureController.addPictureData(forUser: currentUser.name, forPicture: picture) {_ in}
+//            }
+//        }
+//    }
+//
+//    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+//        if URLTextField.text!.isEmpty {
+//            if let pickedImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+//                imageView.contentMode = .scaleAspectFit
+//                self.image = pickedImage
+//                imageView.image = pickedImage
+//                lastChosen = "imagePicker"
+//            }
+//            dismiss(animated: true, completion: nil)
+//        }
+//    }
+//
+//    if lastChosen == "imagePicker" {
+//        uploadImage()
+//    } else if lastChosen == "URL" {
+//        uploadImageWithURL()
+//    }
