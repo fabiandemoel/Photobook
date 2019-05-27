@@ -16,7 +16,9 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     var currentUser: User!
     var picture: Picture!
     var image: UIImage!
+    var lastChosen = ""
     let imagePicker = UIImagePickerController()
+    let pictureController = PictureController.shared
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     // Outlets and Actions
@@ -26,6 +28,7 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     @IBOutlet var submitPostButton: UIButton!
     @IBOutlet var imageView: UIImageView!
     @IBOutlet var ChoosePictureButton: UIButton!
+    @IBOutlet var URLTextField: UITextField!
     @IBAction func textEditingChanged(_ sender: Any) {
         updateSaveButtonState()
     }
@@ -59,7 +62,6 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         ChoosePictureButton.tintColor = .white
         
         // Set Image
-        let pictureController = PictureController.shared
         pictureController.fetchPicture(url: picture.url) { (image) in
             guard let image = image else { return }
             self.image = image
@@ -81,26 +83,49 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let pickedImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-            imageView.contentMode = .scaleAspectFit
-            self.image = pickedImage
-            imageView.image = pickedImage
+        if URLTextField.text!.isEmpty {
+            if let pickedImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+                imageView.contentMode = .scaleAspectFit
+                self.image = pickedImage
+                imageView.image = pickedImage
+                lastChosen = "imagePicker"
+            }
+            dismiss(animated: true, completion: nil)
         }
-        dismiss(animated: true, completion: nil)
     }
 
     func uploadImage() {
         let imageFile = self.image.jpegData(compressionQuality: 1)
         
         if imageFile == nil { return }
-        PictureController.shared.uploadImage(forPicture: imageFile!) {_ in
+        pictureController.uploadImage(forPicture: imageFile!) {_ in
             print("image: \(imageFile!)")
         }
         if let title = titleTextField.text {
             if let description = descriptionTextField.text {
                 let url = "https://ide50-a10778403.legacy.cs50.io:8080/uploads/\(title).jpg"
                 let picture: [String: String] = ["title": title, "description": description, "url": url]
-                PictureController.shared.addPictureData(forUser: currentUser.name, forPicture: picture) {_ in}
+                pictureController.addPictureData(forUser: currentUser.name, forPicture: picture) {_ in}
+            }
+        }
+    }
+    
+    // Use image url
+    @IBAction func fetchImageButtonPressed(_ sender: Any) {
+        if let url = URL(string: URLTextField.text!) {
+            pictureController.fetchPicture(url: url) {(image) in
+                self.image = image
+                self.lastChosen = "URL"
+            }}
+        self.imageView.image = self.image
+    }
+    
+    func uploadImageWithURL() {
+        if let title = titleTextField.text {
+            if let description = descriptionTextField.text {
+                let url = URLTextField.text!
+                let picture: [String: String] = ["title": title, "description": description, "url": url]
+                pictureController.addPictureData(forUser: currentUser.name, forPicture: picture) {_ in}
             }
         }
     }
@@ -118,9 +143,13 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         picture.description = descriptionTextField.text
         if let post = picture {
             // edit post with Put message
-            PictureController.shared.editPictureData(forValues: ["title": post.title, "description": post.description], forPicture: post.id, forUser: currentUser!.name) {_ in}
+            pictureController.editPictureData(forValues: ["title": post.title, "description": post.description], forPicture: post.id, forUser: currentUser!.name) {_ in}
         } else {
-            uploadImage()
+            if lastChosen == "imagePicker" {
+                uploadImage()
+            } else if lastChosen == "URL" {
+                uploadImageWithURL()
+            }
         }
     }
     

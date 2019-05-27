@@ -372,7 +372,7 @@
                                 <rect key="frame" x="68" y="84" width="239" height="544"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="VYO-LN-j8e">
-                                        <rect key="frame" x="0.0" y="0.0" width="239" height="252"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="239" height="212"/>
                                         <subviews>
                                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Title" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Ewx-V8-nIg">
                                                 <rect key="frame" x="95" y="0.0" width="49.5" height="30"/>
@@ -388,10 +388,10 @@
                                                 </connections>
                                             </textField>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="jNI-oQ-DD0">
-                                                <rect key="frame" x="0.0" y="40" width="239" height="212"/>
+                                                <rect key="frame" x="0.0" y="40" width="239" height="172"/>
                                                 <subviews>
                                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="daR-ie-Iab">
-                                                        <rect key="frame" x="0.0" y="0.0" width="239" height="133"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="239" height="92"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="100" id="kUQ-VL-Vfk"/>
                                                         </constraints>
@@ -402,8 +402,8 @@
                                                         </variation>
                                                     </imageView>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XrH-sb-pSk">
-                                                        <rect key="frame" x="67" y="143" width="105" height="69"/>
-                                                        <state key="normal" title="Choose Picture"/>
+                                                        <rect key="frame" x="23" y="102" width="193" height="70"/>
+                                                        <state key="normal" title="Choose Picture from Library"/>
                                                         <connections>
                                                             <action selector="loadImageButtonTapped:" destination="DUd-3s-OgR" eventType="touchUpInside" id="g3V-Xg-eZL"/>
                                                         </connections>
@@ -417,6 +417,25 @@
                                         <constraints>
                                             <constraint firstItem="jNI-oQ-DD0" firstAttribute="leading" secondItem="VYO-LN-j8e" secondAttribute="leading" id="JFm-tg-LM7"/>
                                         </constraints>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Ebt-af-WIq">
+                                        <rect key="frame" x="0.0" y="222" width="239" height="30"/>
+                                        <subviews>
+                                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Image URL" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="g3a-4A-Xtw">
+                                                <rect key="frame" x="0.0" y="0.0" width="144" height="30"/>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits"/>
+                                            </textField>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oJB-xg-JoA">
+                                                <rect key="frame" x="154" y="0.0" width="85" height="30"/>
+                                                <state key="normal" title="Fetch image"/>
+                                                <connections>
+                                                    <action selector="fetchImageButtonPressed:" destination="DUd-3s-OgR" eventType="touchUpInside" id="xiN-te-gr1"/>
+                                                    <action selector="fetchImageFromURL:" destination="DUd-3s-OgR" eventType="touchUpInside" id="Vsu-Xv-tC2"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
                                     </stackView>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="oUe-XY-Etw">
                                         <rect key="frame" x="0.0" y="262" width="239" height="282"/>
@@ -453,6 +472,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="ChoosePictureButton" destination="XrH-sb-pSk" id="kFd-PW-DWR"/>
+                        <outlet property="URLTextField" destination="g3a-4A-Xtw" id="3U4-c5-bid"/>
                         <outlet property="descriptionTextField" destination="oUe-XY-Etw" id="1Pt-Sf-1K3"/>
                         <outlet property="imageView" destination="daR-ie-Iab" id="pv1-LM-7FU"/>
                         <outlet property="saveButton" destination="R5s-OH-IOB" id="TWg-ux-yDy"/>
