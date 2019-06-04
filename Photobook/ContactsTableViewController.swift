@@ -18,13 +18,10 @@ class ContactsTableViewController: UITableViewController {
     var userId = 1
     var currentUser: User!
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var faultyLoginController: UIAlertController!
+    var faultyActionController: UIAlertController!
     
     // Outlets
     @IBOutlet var SwitchUserBarButton: UIBarButtonItem!
-    
-
-//    var currentUser = User.loadSampleUser()
     
     
     // View Did Load
@@ -32,12 +29,10 @@ class ContactsTableViewController: UITableViewController {
         super.viewDidLoad()
         self.currentUser = appDelegate.globalUser
         let user = self.currentUser!
-//        LogInBarButton.isEnabled = false
-//        LogInBarButton.tintColor = .white
         
         // Alert user of demo mode
         if user.name == "Demo Account" {
-            let alert = UIAlertController(title: "Demo Mode", message: "You have been automaticcaly signed in with a sample account", preferredStyle: .alert)
+            let alert = UIAlertController(title: "Demo Mode", message: "You have been automatically signed in with a sample account", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Okay", style: .cancel))
             present(alert, animated: true, completion: nil)
         }
@@ -91,6 +86,7 @@ class ContactsTableViewController: UITableViewController {
                           didSelect viewController: UIViewController) {
         let tabBarIndex = tabBarController.selectedIndex
         if tabBarIndex == 0 {
+            print("tabbar 1 selected")
             if currentUser.name != appDelegate.globalUser.name {
                 viewDidLoad()
             }
@@ -121,10 +117,10 @@ class ContactsTableViewController: UITableViewController {
                                 self.users.removeAll()
                                 self.viewDidLoad()
                             } else {
-                                let faultAlert = self.faultyLoginController!
+                                let faultAlert = self.faultyActionController!
                                 faultAlert.message = "This combination of username and password is incorrect, please try again or sign up for an account."
                                 faultAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-                                self.present(self.faultyLoginController, animated: true, completion: nil)
+                                self.present(self.faultyActionController, animated: true, completion: nil)
                             }
                         }
                     }
@@ -145,10 +141,10 @@ class ContactsTableViewController: UITableViewController {
                     let newUser: [String: String] = ["name": userName, "type": "simple", "friendsFamily": "", "passWord": password]
                     UserController.shared.fetchUser(forUser: userName) { (user) in
                         if user != nil {
-                            let faultAlert = self.faultyLoginController!
+                            let faultAlert = self.faultyActionController!
                             faultAlert.message = "This username is already in use, please choose another."
                             faultAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-                            self.present(self.faultyLoginController, animated: true, completion: nil)
+                            self.present(faultAlert, animated: true, completion: nil)
                         } else {
                             UserController.shared.addUser(forUser: newUser)
                             { (user) in
@@ -191,7 +187,7 @@ class ContactsTableViewController: UITableViewController {
         loginController.addAction(loginAction)
         loginController.addAction(signupAction)
         
-        faultyLoginController = loginController
+        faultyActionController = loginController
         
         // 7
         present(loginController, animated: true, completion: nil)
@@ -205,25 +201,32 @@ class ContactsTableViewController: UITableViewController {
     @IBAction func AddContactButton(_ sender: Any) {
         
         // 1 Create Pop Up Alert
-        let addContactController = UIAlertController(title: "Add Contact", message: "Tell us your friends username and we'll find him!", preferredStyle: UIAlertController.Style.alert)
+        let addContactController = UIAlertController(title: "Add Contact", message: "Tell us your friends username and we'll find them!", preferredStyle: UIAlertController.Style.alert)
         
         // 2 Log user in with provided credentials
         let addContactAction = UIAlertAction(title: "Add Contact", style: UIAlertAction.Style.default) { (action:UIAlertAction) -> Void in
             if let newContact = addContactController.textFields![0].text {
-                UserController.shared.fetchUser(forUser: String(newContact)) { (userFriend) in
-                    if let userFriend = userFriend {
-                        self.users.append(userFriend)
-                        self.updateUI()
-                        
-                        let friends = self.currentUser?.friendsFamily
-                        var newFriends = ""
-                        if friends == nil {
-                            newFriends = newContact
-                        } else {
-                            newFriends = "\(friends!),\(newContact)"
+                let friendList = self.currentUser.friendsFamily.split(separator: ",")
+                if friendList.contains(Substring(newContact)) {
+                    let duplicateFriendAlert = self.faultyActionController!
+                    duplicateFriendAlert.message = "You already have this person in your contact list. Please add a new person's username."
+                    duplicateFriendAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+                    self.present(duplicateFriendAlert, animated: true, completion: nil)
+                } else {
+                    UserController.shared.fetchUser(forUser: String(newContact)) { (userFriend) in
+                        if let userFriend = userFriend {
+                            self.users.append(userFriend)
+                            self.updateUI()
+                            
+                            let friends = self.currentUser?.friendsFamily
+                            var newFriends = ""
+                            if friends == nil {
+                                newFriends = newContact
+                            } else {
+                                newFriends = "\(friends!),\(newContact)"
+                            }
+                            UserController.shared.editUser(forValues: ["friendsFamily": newFriends], forUser: self.currentUser!.id) { (user) in}
                         }
-                        UserController.shared.editUser(forValues: ["friendsFamily": newFriends], forUser: self.currentUser!.id) { (user) in}
-                        
                     }
                 }
             }
@@ -242,6 +245,8 @@ class ContactsTableViewController: UITableViewController {
         
         // 4
         addContactController.addAction(addContactAction)
+        
+        faultyActionController = addContactController
         
         // 5 Present Pop Up
         present(addContactController, animated: true, completion: nil)

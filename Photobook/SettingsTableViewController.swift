@@ -15,6 +15,7 @@ class SettingsTableViewController: UITableViewController {
     var currentUser: User!
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
+    
     // Outlets
     @IBOutlet var UserNameLabel: UILabel!
     @IBOutlet var PassWordTextField: UITextField!
@@ -37,6 +38,8 @@ class SettingsTableViewController: UITableViewController {
         
         // Get Current user
         let user = appDelegate.globalUser
+        print(appDelegate.globalUser.name)
+
         
         // Set parameters
         UserNameLabel.text = user.name
@@ -56,9 +59,13 @@ class SettingsTableViewController: UITableViewController {
     func tabBarController(_ tabBarController: UITabBarController,
                           didSelect viewController: UIViewController) {
         let tabBarIndex = tabBarController.selectedIndex
-        if tabBarIndex == 0 {
+        if tabBarIndex == 2 {
+            print("tabbar 3 selected")
             if currentUser.name != appDelegate.globalUser.name {
                 viewDidLoad()
+            } else {
+                print(appDelegate.globalUser.name)
+                print(currentUser.name)
             }
         }
     }
@@ -69,9 +76,7 @@ class SettingsTableViewController: UITableViewController {
     @IBAction func SaveSettingsButtonPressed(_ sender: Any) {
         if var user = currentUser {
             
-            let userController = UserController.shared
             var changedParameters = [String: String]()
-            
             
             // Password
             if let password = PassWordTextField.text {
@@ -86,13 +91,17 @@ class SettingsTableViewController: UITableViewController {
                 user.type = "normal"
             }
             changedParameters["type"] = user.type
+            
+            // Upload and Save user
+            let userController = UserController.shared
             userController.editUser(forValues: changedParameters, forUser: user.id) {_ in}
             appDelegate.globalUser = user
             
+            
+            // Feedback for user
             let alert = UIAlertController(title: "Settings Saved!", message: "Your settings have been saved", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Okay", style: .cancel))
             present(alert, animated: true, completion: nil)
         }
-        
     }
 }

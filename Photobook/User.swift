@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct User: Encodable, Decodable {
     var id: Int
@@ -15,6 +16,10 @@ struct User: Encodable, Decodable {
     var friendsFamily: String //seperate into different names/ids using initializer
     var passWord: String
 
+    
+    //////////////////////// Load User /////////////////////
+    
+    // Load saved or sample user
     static func loadUser() -> User {
         if let savedUser = loadSavedUser() {
             return savedUser
@@ -24,18 +29,21 @@ struct User: Encodable, Decodable {
         }
     }
 
+    // Get saved user from archive
     static func loadSavedUser() -> User? {
         guard let codedUser = try? Data(contentsOf: ArchiveURL) else {return nil}
         let propertyListDecoder = PropertyListDecoder()
         return try? propertyListDecoder.decode(User.self, from: codedUser)
     }
     
+    // Save user to archive
     static func saveUser(_ user: User) {
         let propertyListEncoder = PropertyListEncoder()
         let codedUser = try? propertyListEncoder.encode(user)
         try? codedUser?.write(to: ArchiveURL, options: .noFileProtection)
     }
     
+    // Load sample user
     static func loadSampleUser() -> User {
         var sampleUser: User?
         UserController.shared.fetchUser(forUser: "Demo Account") { (user) in
@@ -49,9 +57,11 @@ struct User: Encodable, Decodable {
             return user
         } else {
             let user = User(id: 1, name: "Demo Account", type: "normal", friendsFamily: "Jack,Jasmin", passWord: "wachtwoord")
+//            let alert = UIAlertController(title: "Trouble connecting to server!", message: "There seems to be a problem connecting to the server, functions are limited.", preferredStyle: .alert)
+//            alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel))
+//            present(alert, animated: true, completion: nil)
             return user
         }
-        
     }
     
     

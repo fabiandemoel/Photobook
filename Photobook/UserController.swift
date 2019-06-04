@@ -48,7 +48,9 @@ class UserController {
             let jsonDecoder = JSONDecoder()
             if let data = data,
                 let user = try? jsonDecoder.decode([User].self, from: data) {
-                completion(user[0])
+                if user[0] != nil {
+                    completion(user[0])
+                }
             } else {
                 completion(nil)
             }
