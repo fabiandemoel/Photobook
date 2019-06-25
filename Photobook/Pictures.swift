@@ -11,9 +11,14 @@ import Foundation
 struct Picture: Decodable {
     
     var id: Int
-    var title: String
+    var title: String = ""
     var description: String
     var url: URL
+}
+
+struct ImageString: Decodable {
+    var title: String
+    var imageString: String
 }
 
 struct Pictures: Decodable {

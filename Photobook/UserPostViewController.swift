@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PostImageViewController: UIViewController {
+class UserPostViewController: UIViewController {
     
     ////////////// View Preperation ////////////////////
     

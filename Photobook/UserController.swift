@@ -10,7 +10,7 @@ import Foundation
 
 extension URL {
     
-    func withQueries(_ queries: [String]) -> URL? {
+    func withQueriesforUsers(_ queries: [String]) -> URL? {
         
         var components = URLComponents(url: self, resolvingAgainstBaseURL: true)
         components?.queryItems = queries.compactMap { URLQueryItem(name: "name", value: $0) }
@@ -35,7 +35,7 @@ class UserController {
     func fetchUser(forUser userName: String, completion: @escaping (User?) -> Void) {
         
         // append url with user id
-        guard let url = baseUrl.withQueries([userName]) else {
+        guard let url = baseUrl.withQueriesforUsers([userName]) else {
             completion(nil)
             print("Unable to build URL with supplied queries.")
             return
@@ -48,8 +48,10 @@ class UserController {
             let jsonDecoder = JSONDecoder()
             if let data = data,
                 let user = try? jsonDecoder.decode([User].self, from: data) {
-                if user[0] != nil {
+                if user.isEmpty != true {
                     completion(user[0])
+                } else {
+                    completion(nil)
                 }
             } else {
                 completion(nil)

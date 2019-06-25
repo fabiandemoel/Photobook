@@ -122,6 +122,11 @@ class ContactsTableViewController: UITableViewController {
                                 faultAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
                                 self.present(self.faultyActionController, animated: true, completion: nil)
                             }
+                        } else {
+                            let faultAlert = self.faultyActionController!
+                            faultAlert.message = "This username is unknown, please try again or sign up for an account."
+                            faultAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+                            self.present(self.faultyActionController, animated: true, completion: nil)
                         }
                     }
                 }

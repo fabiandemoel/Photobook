@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SettingsTableViewController: UITableViewController {
+class SettingsTableViewController: UITableViewController, UITabBarControllerDelegate {
 
     ////////////////////// View Preperation /////////////////////
     
@@ -36,6 +36,7 @@ class SettingsTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.tabBarController?.delegate = self
         // Get Current user
         let user = appDelegate.globalUser
         print(appDelegate.globalUser.name)
@@ -53,20 +54,14 @@ class SettingsTableViewController: UITableViewController {
         
         // Assign to variable
         self.currentUser = user
+        
+        tableView.reloadData()
     }
     
     // Reload data when switched to Tab bar with new user
-    func tabBarController(_ tabBarController: UITabBarController,
-                          didSelect viewController: UIViewController) {
-        let tabBarIndex = tabBarController.selectedIndex
-        if tabBarIndex == 2 {
-            print("tabbar 3 selected")
-            if currentUser.name != appDelegate.globalUser.name {
-                viewDidLoad()
-            } else {
-                print(appDelegate.globalUser.name)
-                print(currentUser.name)
-            }
+    override func viewWillAppear(_ animated: Bool) {
+        if currentUser.name != appDelegate.globalUser.name {
+            viewDidLoad()
         }
     }
     

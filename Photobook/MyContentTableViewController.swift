@@ -77,7 +77,9 @@ class MyContentTableViewController: UITableViewController, UITabBarControllerDel
     func configure(_ cell: UITableViewCell, forItemAt indexPath: IndexPath) {
         let picture = content[indexPath.row]
         cell.textLabel?.text = picture.title
-        PictureController.shared.fetchPicture(url: picture.url) { (image) in
+        
+        // !! Change ID !! //
+        PictureController.shared.fetchImage(user: user.name, title: picture.title) { (image) in
             guard let image = image else { return }
             DispatchQueue.main.async {
                 if let currentIndexPath = self.tableView.indexPath(for: cell), currentIndexPath != indexPath {return}
@@ -124,27 +126,23 @@ class MyContentTableViewController: UITableViewController, UITabBarControllerDel
         tabBarController!.selectedIndex = 2
     }
     
-    // Recheck user data when switched to Tab bar
-    func tabBarController(_ tabBarController: UITabBarController,
-                          didSelect viewController: UIViewController) {
-        let tabBarIndex = tabBarController.selectedIndex
-        if tabBarIndex == 1 {
-            if user.name != appDelegate.globalUser.name {
-                viewDidLoad()
-            } else {
-                user = appDelegate.globalUser
-                checkType()
-            }
+    // Reload data when switched to Tab bar with new user
+    override func viewWillAppear(_ animated: Bool) {
+        if user.name != appDelegate.globalUser.name {
+            viewDidLoad()
+        } else {
+            user = appDelegate.globalUser
+            checkType()
         }
     }
     
     
-    /////////////////////// Functions //////////////////////////////
+    /////////////////////// Segue Functions //////////////////////////////
     
     // Segue Function
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetails" {
-            let uploadViewController = segue.destination as! UploadViewController
+            let uploadViewController = segue.destination as! NewPostViewController
             let indexPath = tableView.indexPathForSelectedRow!
             let selectedPost = content[indexPath.row]
             uploadViewController.picture = selectedPost
@@ -158,11 +156,11 @@ class MyContentTableViewController: UITableViewController, UITabBarControllerDel
         }
     }
     
-    // Dismiss current view
+    // Unwind function
     @IBAction func unwindToMyContent(segue: UIStoryboardSegue) {
         guard segue.identifier == "saveUnwind" else { return }
         
-        let sourceViewController = segue.source as! UploadViewController
+        let sourceViewController = segue.source as! NewPostViewController
         if let picture = sourceViewController.picture {
     
             // Check if a cell was edited or needs to be added

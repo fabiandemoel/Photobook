@@ -57,7 +57,9 @@ class UserContentTableViewController: UITableViewController {
     func configure(_ cell: UITableViewCell, forItemAt indexPath: IndexPath) {
         let picture = content[indexPath.row]
         cell.textLabel?.text = picture.title
-        PictureController.shared.fetchPicture(url: picture.url) { (image) in
+        
+        // !! change id !! //
+        PictureController.shared.fetchImage(user: user.name, title: picture.title) { (image) in
             guard let image = image else { return }
             DispatchQueue.main.async {
                 if let currentIndexPath = self.tableView.indexPath(for: cell), currentIndexPath != indexPath {return}
@@ -74,7 +76,7 @@ class UserContentTableViewController: UITableViewController {
     // Segue prep
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ViewPostSegue" {
-            let postViewController = segue.destination as! PostViewController
+            let postViewController = segue.destination as! UserPostViewController
             let index = tableView.indexPathForSelectedRow!.row
             postViewController.picture = content[index]
             postViewController.image = images[index]

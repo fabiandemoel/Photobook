@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		9E6E1C7BE099F84EA7122EDE /* Pods_Photobook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 88A3E4D0B3F8A98C76575C85 /* Pods_Photobook.framework */; };
-		A774BB74229684A10094603E /* PostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A774BB73229684A10094603E /* PostViewController.swift */; };
+		A774BB74229684A10094603E /* UserPostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A774BB73229684A10094603E /* UserPostViewController.swift */; };
 		A788B7FD227747600001FC52 /* UserContentTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A788B7FC227747600001FC52 /* UserContentTableViewController.swift */; };
 		A788B7FF227747AE0001FC52 /* ContactsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A788B7FE227747AE0001FC52 /* ContactsTableViewController.swift */; };
 		A788B801227747FF0001FC52 /* MyContentTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A788B800227747FF0001FC52 /* MyContentTableViewController.swift */; };
@@ -18,7 +18,7 @@
 		A7DC9F91222426640089B073 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A7DC9F8F222426640089B073 /* Main.storyboard */; };
 		A7DC9F93222426650089B073 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A7DC9F92222426650089B073 /* Assets.xcassets */; };
 		A7DC9F96222426650089B073 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A7DC9F94222426650089B073 /* LaunchScreen.storyboard */; };
-		A7ED010A222D8F7600733691 /* UploadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ED0109222D8F7600733691 /* UploadViewController.swift */; };
+		A7ED010A222D8F7600733691 /* NewPostViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ED0109222D8F7600733691 /* NewPostViewController.swift */; };
 		A7ED011A222DAE0200733691 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ED0119222DAE0200733691 /* User.swift */; };
 		A7EE75FC229540D9005A5BD5 /* UserController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EE75FB229540D9005A5BD5 /* UserController.swift */; };
 		A7EE75FE229542DD005A5BD5 /* PictureController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EE75FD229542DD005A5BD5 /* PictureController.swift */; };
@@ -30,7 +30,7 @@
 		88A3E4D0B3F8A98C76575C85 /* Pods_Photobook.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Photobook.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C4CF06752BB00E8259FDEF1 /* Pods-Photobook.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Photobook.debug.xcconfig"; path = "Target Support Files/Pods-Photobook/Pods-Photobook.debug.xcconfig"; sourceTree = "<group>"; };
 		A774BB7222967F080094603E /* Photobook-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Photobook-Bridging-Header.h"; sourceTree = "<group>"; };
-		A774BB73229684A10094603E /* PostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostViewController.swift; sourceTree = "<group>"; };
+		A774BB73229684A10094603E /* UserPostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPostViewController.swift; sourceTree = "<group>"; };
 		A788B7FC227747600001FC52 /* UserContentTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserContentTableViewController.swift; sourceTree = "<group>"; };
 		A788B7FE227747AE0001FC52 /* ContactsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsTableViewController.swift; sourceTree = "<group>"; };
 		A788B800227747FF0001FC52 /* MyContentTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyContentTableViewController.swift; sourceTree = "<group>"; };
@@ -42,7 +42,7 @@
 		A7DC9F92222426650089B073 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A7DC9F95222426650089B073 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A7DC9F97222426650089B073 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A7ED0109222D8F7600733691 /* UploadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadViewController.swift; sourceTree = "<group>"; };
+		A7ED0109222D8F7600733691 /* NewPostViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPostViewController.swift; sourceTree = "<group>"; };
 		A7ED0119222DAE0200733691 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		A7EE75FB229540D9005A5BD5 /* UserController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserController.swift; sourceTree = "<group>"; };
 		A7EE75FD229542DD005A5BD5 /* PictureController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PictureController.swift; sourceTree = "<group>"; };
@@ -109,8 +109,8 @@
 				A788B7FC227747600001FC52 /* UserContentTableViewController.swift */,
 				A788B800227747FF0001FC52 /* MyContentTableViewController.swift */,
 				A7CC4CD9227ECA0C001F634D /* SettingsTableViewController.swift */,
-				A7ED0109222D8F7600733691 /* UploadViewController.swift */,
-				A774BB73229684A10094603E /* PostViewController.swift */,
+				A7ED0109222D8F7600733691 /* NewPostViewController.swift */,
+				A774BB73229684A10094603E /* UserPostViewController.swift */,
 				A7DC9F8D222426640089B073 /* ViewController.swift */,
 				A7DC9F92222426650089B073 /* Assets.xcassets */,
 				A7DC9F94222426650089B073 /* LaunchScreen.storyboard */,
@@ -220,12 +220,14 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Photobook/Pods-Photobook-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/HTMLString/HTMLString.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 			);
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/HTMLString.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -240,10 +242,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A774BB74229684A10094603E /* PostViewController.swift in Sources */,
+				A774BB74229684A10094603E /* UserPostViewController.swift in Sources */,
 				A7EE76022295451F005A5BD5 /* Pictures.swift in Sources */,
 				A788B801227747FF0001FC52 /* MyContentTableViewController.swift in Sources */,
-				A7ED010A222D8F7600733691 /* UploadViewController.swift in Sources */,
+				A7ED010A222D8F7600733691 /* NewPostViewController.swift in Sources */,
 				A7EE75FC229540D9005A5BD5 /* UserController.swift in Sources */,
 				A7DC9F8E222426640089B073 /* ViewController.swift in Sources */,
 				A788B7FF227747AE0001FC52 /* ContactsTableViewController.swift in Sources */,

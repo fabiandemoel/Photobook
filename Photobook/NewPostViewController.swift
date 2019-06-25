@@ -6,9 +6,10 @@
 //  Copyright © 2019 Fabian de Moel. All rights reserved.
 //
 
+import Foundation
 import UIKit
 
-class UploadViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class NewPostViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     
     ////////////////////// View Preperation /////////////////////
@@ -59,7 +60,8 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
         ChoosePictureButton.tintColor = .white
         
         // Set Image
-        pictureController.fetchPicture(url: picture.url) { (image) in
+        pictureController.fetchImage(user: currentUser.name, title: title!) { (image) in
+            print(image)
             guard let image = image else { return }
             self.image = image
         }
@@ -89,16 +91,22 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     }
 
     func uploadImage() {
-        let imageFile = self.image.jpegData(compressionQuality: 1)
+//        let imageFile = self.image.jpegData(compressionQuality: 1)
+        let imageFile = self.image
         
-        if imageFile == nil { return }
-        pictureController.uploadImage(forPicture: imageFile!) {_ in
-            print("image: \(imageFile!)")
-        }
+        
+        
+
         if let title = titleTextField.text {
+            if imageFile == nil { return }
+            pictureController.uploadImage(forUser: currentUser.name, forImage: imageFile!, forPictureTitle: title) {_ in
+                print("image: \(imageFile!)")
+            }
             if let description = descriptionTextField.text {
                 let url = "https://ide50-a10778403.legacy.cs50.io:8080/uploads/\(title).jpg"
                 let picture: [String: String] = ["title": title, "description": description, "url": url]
+                let Url = URL(string: "https://ide50-a10778403.legacy.cs50.io:8080/uploads/")!
+                self.picture = Picture(id: 0, title: title, description: description, url: Url)
                 pictureController.addPictureData(forUser: currentUser.name, forPicture: picture) {_ in}
             }
         }
@@ -112,10 +120,11 @@ class UploadViewController: UIViewController, UIImagePickerControllerDelegate, U
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         super.prepare(for: segue, sender: sender)
         guard segue.identifier == "saveUnwind" else { return }
-        picture.title = titleTextField.text!
-        picture.description = descriptionTextField.text
-        if let post = picture {
+        
+        if var post = picture {
             // edit post with Put message
+            post.title = titleTextField.text!
+            post.description = descriptionTextField.text
             pictureController.editPictureData(forValues: ["title": post.title, "description": post.description], forPicture: post.id, forUser: currentUser!.name) {_ in}
         } else {
             uploadImage()
