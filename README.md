@@ -1,5 +1,5 @@
 # App-Project
-Project for the programming minor
+Project for the programming minor by Fabian de Moel. This application serves as a social medium on which people can share pictures. This code is licensed as a public domain release.
 
 ## Problem statement
 A familiar problem for old people is that they can't keep up with the fast paced changes in technology. Yet their children are able to interact with this technology very well and outpace them. This is cause for a rift; your grandparents are not able to interact with complex apps like you are. An effect hereof is that grandparents cannot participate in social media, whilst they would very much enjoy some of the content produced by their grandchildren on these platforms. Grandchildren on the other hand are happy that their grandparents aren't on these platforms, since some of the content they produce or parttake are not meant for their eyes.
