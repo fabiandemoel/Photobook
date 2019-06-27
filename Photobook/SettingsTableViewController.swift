@@ -39,8 +39,6 @@ class SettingsTableViewController: UITableViewController, UITabBarControllerDele
         self.tabBarController?.delegate = self
         // Get Current user
         let user = appDelegate.globalUser
-        print(appDelegate.globalUser.name)
-
         
         // Set parameters
         UserNameLabel.text = user.name

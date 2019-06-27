@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import CoreGraphics
 
 class NewPostViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -49,7 +50,7 @@ class NewPostViewController: UIViewController, UIImagePickerControllerDelegate, 
     
     /////////////////////// Functions //////////////////////////////
     
-    // Load Picture
+    // Load Post
     func loadPost(with picture: Picture) {
         
         // Set Text Fields
@@ -60,8 +61,7 @@ class NewPostViewController: UIViewController, UIImagePickerControllerDelegate, 
         ChoosePictureButton.tintColor = .white
         
         // Set Image
-        pictureController.fetchImage(user: currentUser.name, title: title!) { (image) in
-            print(image)
+        pictureController.fetchImageString(user: currentUser.name, title: title!) { (image) in
             guard let image = image else { return }
             self.image = image
         }
@@ -84,32 +84,68 @@ class NewPostViewController: UIViewController, UIImagePickerControllerDelegate, 
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let pickedImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
             imageView.contentMode = .scaleAspectFit
-            self.image = pickedImage
-            imageView.image = pickedImage
+            let image = resizeImage(image: pickedImage, newWidth: 400.0)
+            self.image = image
+//            let base64 = convertImageToBase64(image: pickedImage)
+//            let convertedimage = convertBase64ToImage(imageString: base64)
+            imageView.image = image // convertedImage
         dismiss(animated: true, completion: nil)
         }
     }
+    
+    
+    // Convert UIImage to a base64 representation
+    func convertImageToBase64(image: UIImage) -> String {
+        let imageData = image.jpegData(compressionQuality: 0.1)!
+        let imageString = imageData.base64EncodedString(options: Data.Base64EncodingOptions.lineLength64Characters)
+        return imageString
+    }
+    
+    
+    // Convert a base64 representation to a UIImage
+    func convertBase64ToImage(imageString: String) -> UIImage? {
+        if let dataDecoded = Data(base64Encoded: imageString, options: Data.Base64DecodingOptions.ignoreUnknownCharacters) {
+            if let decodedimage:UIImage = UIImage(data: dataDecoded) {
+                print("Image decoded to: \(decodedimage)")
+                return decodedimage
+            } else {
+                print("Could not turn data into image")
+            }
+        } else {
+            print("Data not decodable")
+        }
+        return nil
+    }
+    
+    func resizeImage(image: UIImage, newWidth: CGFloat) -> UIImage {
+        
+        let scale = newWidth / image.size.width
+        let newHeight = image.size.height * scale
+        UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
+        image.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage!
+    }
+    
 
-    func uploadImage() {
+    func uploadImageString() {
 //        let imageFile = self.image.jpegData(compressionQuality: 1)
         let imageFile = self.image
         
-        
-        
-
         if let title = titleTextField.text {
             if imageFile == nil { return }
-            pictureController.uploadImage(forUser: currentUser.name, forImage: imageFile!, forPictureTitle: title) {_ in
+            pictureController.uploadImageString(forUser: currentUser.name, forImage: imageFile!, forPictureTitle: title) {_ in
                 print("image: \(imageFile!)")
             }
             if let description = descriptionTextField.text {
-                let url = "https://ide50-a10778403.legacy.cs50.io:8080/uploads/\(title).jpg"
-                let picture: [String: String] = ["title": title, "description": description, "url": url]
-                let Url = URL(string: "https://ide50-a10778403.legacy.cs50.io:8080/uploads/")!
-                self.picture = Picture(id: 0, title: title, description: description, url: Url)
+                let picture: [String: String] = ["title": title, "description": description]
+                self.picture = Picture(id: 0, title: title, description: description)
                 pictureController.addPictureData(forUser: currentUser.name, forPicture: picture) {_ in}
             }
         }
+        sleep(1)
     }
 
     // Unwind function
@@ -127,7 +163,7 @@ class NewPostViewController: UIViewController, UIImagePickerControllerDelegate, 
             post.description = descriptionTextField.text
             pictureController.editPictureData(forValues: ["title": post.title, "description": post.description], forPicture: post.id, forUser: currentUser!.name) {_ in}
         } else {
-            uploadImage()
+            uploadImageString()
         }
     }
 }

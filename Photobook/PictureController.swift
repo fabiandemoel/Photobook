@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import Alamofire
 
 extension URL {
     
@@ -51,8 +52,8 @@ class PictureController {
         task.resume()
     }
     
-    // Get Image
-    func fetchImage(user: String, title: String, completion: @escaping (UIImage?) -> Void) {
+    // Get String Image
+    func fetchImageString(user: String, title: String, completion: @escaping (UIImage?) -> Void) {
         let baseUrl = URL(string: "https://ide50-a10778403.legacy.cs50.io:8080/list/pictures\(user)")!
         
         let query: [String] = [title]
@@ -68,11 +69,9 @@ class PictureController {
             if let data = data,
                 let imageString = try? jsonDecoder.decode([ImageString].self, from: data) {
                 if imageString.isEmpty != true {
-                    let image = self.convertBase64ToImage(imageString: imageString[0].imageString)
-                    print("Image: \(image)")
+                    let image = self.convertBase64ToImage(imageString: imageString[0].imageString.replacingOccurrences(of: " ", with: "+"))
                     completion(image)
                 } else {
-                    
                     completion(nil)
                 }
             } else {
@@ -97,7 +96,7 @@ class PictureController {
         
         // Picture Data
         let picture: [String: Any] = pictureData
-        request.httpBody = "title=\(picture["title"]!)&description=\(picture["description"]!)&url=\(picture["url"]!)".data(using: .utf8)
+        request.httpBody = "title=\(picture["title"]!)&description=\(picture["description"]!)".data(using: .utf8)
         
         // Save Picture Data
         let task = URLSession.shared.dataTask(with: request) { (data,
@@ -116,25 +115,21 @@ class PictureController {
     
     
     
-    // Upload the Image
-    func uploadImage(forUser user: String, forImage image: UIImage, forPictureTitle title: String, completion: @escaping (Picture?) -> Void) {
+    //Upload Image with string base 64
+    func uploadImageString(forUser user: String, forImage image: UIImage, forPictureTitle title: String, completion: @escaping (Picture?) -> Void) {
         let url = URL(string: "https://ide50-a10778403.legacy.cs50.io:8080/list/pictures\(user)")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        
+
         // Picture Data
         let imageString = convertImageToBase64(image: image)
         request.httpBody = "title=\(title)&imageString=\(imageString)".data(using: .utf8)
-        
+
         // Save Picture Data
         let task = URLSession.shared.dataTask(with: request) { (data,
             response, error) in
-            let jsonDecoder = JSONDecoder()
             if let data = data {
-//                let picture = try?
-//                    jsonDecoder.decode(Picture.self, from: data) {
-//                completion(picture)
                 print(data)
                 completion(nil)
             } else {
@@ -143,7 +138,6 @@ class PictureController {
         }
         task.resume()
     }
-    
     
     
     ///// Accompanying Functions /////
@@ -161,7 +155,6 @@ class PictureController {
     func convertBase64ToImage(imageString: String) -> UIImage? {
         if let dataDecoded = Data(base64Encoded: imageString, options: Data.Base64DecodingOptions.ignoreUnknownCharacters) {
             print("Data Decoded: \(dataDecoded)")
-            
             if let decodedimage:UIImage = UIImage(data: dataDecoded) {
                 print(decodedimage)
                 return decodedimage
@@ -174,6 +167,9 @@ class PictureController {
         return nil
     }
     
+    func generateBoundaryString() -> String {
+        return "Boundary-\(NSUUID().uuidString)"
+    }
     
     /////////////////////////// PUT function ///////////////////////
     
@@ -272,7 +268,7 @@ extension Data {
 
 
 //    // Upload the Image
-//    func uploadImage(forUser user: String, forImage image: Data, forPictureTitle title: String, completion: @escaping (Picture?) -> Void) {
+//    func uploadImageJpeg(forUser user: String, forImage image: Data, forPictureTitle title: String, completion: @escaping (Picture?) -> Void) {
 //
 //        // Header
 //        let uploadUrl = URL(string: "https://ide50-a10778403.legacy.cs50.io:8080/picture_upload/")!
@@ -337,7 +333,7 @@ extension Data {
 
 
 //          Fetch Picture
-//        func fetchPicture(url: URL, completion: @escaping (UIImage?) -> Void) {
+//        func fetchPictureJpeg(url: URL, completion: @escaping (UIImage?) -> Void) {
 //            let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
 //                if let data = data,
 //                    let image = UIImage(data: data) {
@@ -348,3 +344,58 @@ extension Data {
 //            }
 //            task.resume()
 //        }
+
+
+
+/////////////////// Upload Image with string base 64
+//    func uploadImage(forUser user: String, forImage image: UIImage, forPictureTitle title: String, completion: @escaping (Picture?) -> Void) {
+//        let url = URL(string: "https://ide50-a10778403.legacy.cs50.io:8080/list/pictures\(user)")!
+//        var request = URLRequest(url: url)
+//        request.httpMethod = "POST"
+//        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+//
+//        // Picture Data
+//        let imageString = convertImageToBase64(image: image)
+//        request.httpBody = "title=\(title)&imageString=\(imageString)".data(using: .utf8)
+//
+//        // Save Picture Data
+//        let task = URLSession.shared.dataTask(with: request) { (data,
+//            response, error) in
+//            let jsonDecoder = JSONDecoder()
+//            if let data = data {
+////                let picture = try?
+////                    jsonDecoder.decode(Picture.self, from: data) {
+////                completion(picture)
+//                print(data)
+//                completion(nil)
+//            } else {
+//                completion(nil)
+//            }
+//        }
+//        task.resume()
+//    }
+
+
+
+////////////// Alamofire ////////////////
+
+//    // Upload the Image
+//    func uploadImage(forUser user: String, forImage image: UIImage, forPictureTitle title: String, completion: @escaping (Picture?) -> Void) {
+//
+//        let imageData: NSMutableData = NSMutableData(data: image.jpegData(compressionQuality: 1)!);
+//
+//
+//
+////        AF.upload(.POST, "http://localhost:8080/rest/service/upload?attachmentName=file.jpg",  imageData)
+////            .progress { (bytesWritten, totalBytesWritten, totalBytesExpectedToWrite) in
+////                print(totalBytesWritten)
+////            }
+////            .responseString { (request, response, JSON, error) in
+////                print(request)
+////                print(response)
+////                print(JSON)
+////        }
+//
+//    }
+//
+

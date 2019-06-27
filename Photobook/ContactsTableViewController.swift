@@ -143,7 +143,7 @@ class ContactsTableViewController: UITableViewController {
             // Register User
             if let userName = loginTextField.text {
                 if let password = passwordTextField.text {
-                    let newUser: [String: String] = ["name": userName, "type": "simple", "friendsFamily": "", "passWord": password]
+                    let newUser: [String: String] = ["name": userName, "type": "simple", "friendsFamily": "DemoAccount", "passWord": password]
                     UserController.shared.fetchUser(forUser: userName) { (user) in
                         if user != nil {
                             let faultAlert = self.faultyActionController!
@@ -157,6 +157,7 @@ class ContactsTableViewController: UITableViewController {
                                     if let user = user {
                                         self.appDelegate.globalUser = user
                                         self.users.removeAll()
+                                        print(self.users)
                                         self.viewDidLoad()
                                     }
                                 }

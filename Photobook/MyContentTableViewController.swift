@@ -53,16 +53,11 @@ class MyContentTableViewController: UITableViewController, UITabBarControllerDel
         return true
     }
     
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Send delete request to server
-            let picture = content[indexPath.row]
-            PictureController.shared.deletePictureData(forPicture: picture.id, forUser: user.name) {_ in
-            }
-            self.content.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        }
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
+    {
+        return 120
     }
+    
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return content.count
@@ -74,12 +69,13 @@ class MyContentTableViewController: UITableViewController, UITabBarControllerDel
         return cell
     }
     
+    // Set up Cells
     func configure(_ cell: UITableViewCell, forItemAt indexPath: IndexPath) {
         let picture = content[indexPath.row]
         cell.textLabel?.text = picture.title
         
-        // !! Change ID !! //
-        PictureController.shared.fetchImage(user: user.name, title: picture.title) { (image) in
+        // Get image String
+        PictureController.shared.fetchImageString(user: user.name, title: picture.title) { (image) in
             guard let image = image else { return }
             DispatchQueue.main.async {
                 if let currentIndexPath = self.tableView.indexPath(for: cell), currentIndexPath != indexPath {return}
@@ -88,6 +84,19 @@ class MyContentTableViewController: UITableViewController, UITabBarControllerDel
             }
         }
     }
+    
+    // Delete content
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            // Send delete request to server
+            let picture = content[indexPath.row]
+            PictureController.shared.deletePictureData(forPicture: picture.id, forUser: user.name) {_ in
+            }
+            self.content.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+        }
+    }
+
     
     
     ///////////////////// Switch tab bar for simple accounts ///////////////////////
@@ -175,3 +184,18 @@ class MyContentTableViewController: UITableViewController, UITabBarControllerDel
         }
     }
 }
+
+
+
+
+/////////////// Code Bin //////////////
+
+///// Fetch Jpeg Image //////
+//PictureController.shared.fetchImageJpeg(url: picture.url) { (image) in
+//    guard let image = image else { return }
+//    DispatchQueue.main.async {
+//        if let currentIndexPath = self.tableView.indexPath(for: cell), currentIndexPath != indexPath {return}
+//        cell.imageView?.image = image
+//        cell.setNeedsLayout()
+//    }
+//}

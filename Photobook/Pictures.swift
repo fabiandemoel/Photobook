@@ -13,7 +13,6 @@ struct Picture: Decodable {
     var id: Int
     var title: String = ""
     var description: String
-    var url: URL
 }
 
 struct ImageString: Decodable {

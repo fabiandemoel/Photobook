@@ -48,6 +48,11 @@ class UserContentTableViewController: UITableViewController {
         return content.count
     }
     
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
+    {
+        return 120
+    }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "PostCellIdentifier", for: indexPath)
         configure(cell, forItemAt: indexPath)
@@ -57,9 +62,9 @@ class UserContentTableViewController: UITableViewController {
     func configure(_ cell: UITableViewCell, forItemAt indexPath: IndexPath) {
         let picture = content[indexPath.row]
         cell.textLabel?.text = picture.title
-        
-        // !! change id !! //
-        PictureController.shared.fetchImage(user: user.name, title: picture.title) { (image) in
+
+        // Get Image String
+        PictureController.shared.fetchImageString(user: user.name, title: picture.title) { (image) in
             guard let image = image else { return }
             DispatchQueue.main.async {
                 if let currentIndexPath = self.tableView.indexPath(for: cell), currentIndexPath != indexPath {return}
@@ -68,6 +73,7 @@ class UserContentTableViewController: UITableViewController {
                 cell.setNeedsLayout()
             }
         }
+
     }
     
     
@@ -83,3 +89,20 @@ class UserContentTableViewController: UITableViewController {
         }
     }
 }
+
+
+/////////////////// Code Bin /////////////////
+
+////////////// Jpeg fetch ///////////////
+//} else {
+//    // Get Image Jpeg
+//    PictureController.shared.fetchImageJpeg(url: picture.url) { (image) in
+//        guard let image = image else { return }
+//        DispatchQueue.main.async {
+//            if let currentIndexPath = self.tableView.indexPath(for: cell), currentIndexPath != indexPath {return}
+//            cell.imageView?.image = image
+//            self.images.append(image)
+//            cell.setNeedsLayout()
+//        }
+//    }
+//}
